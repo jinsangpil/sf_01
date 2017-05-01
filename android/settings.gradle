@@ -1,0 +1,3 @@
+rootProject.name = 'sf_01'
+
+include ':app'
