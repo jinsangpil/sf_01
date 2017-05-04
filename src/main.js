@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { Container, Content, Text, Card, Header, Body, Button } from 'native-base';
+import { Container, Content, Text, Card, Header, Body, Button, Title } from 'native-base';
 import { Actions } from 'react-native-router-flux';
 
 export default class Main extends Component {
