@@ -22,6 +22,14 @@ const styles = StyleSheet.create({
 
 
 export default class Standard extends Component {
+    constructor(props) {
+    super(props);
+    this.state = {
+        startName: (this.props.startName) ? this.props.startName : '',
+        endName: (this.props.endName) ? this.props.endName : ''
+    };
+  }
+
   render() {
       console.log(this.props, "this.props");
       console.log(this.props.name, "name");
@@ -39,10 +47,18 @@ export default class Standard extends Component {
 
             <Form>
                 <Item>
-                    <Input placeholder="출발지" value={(this.props.startName) ? this.props.startName : ''} />
+                    <Input placeholder="출발지"
+                        onChangeText={(text) =>
+                        this.setState({startName:text})
+                        }
+                        value={this.state.startName} />
                 </Item>
                 <Item>
-                    <Input placeholder="도착지" value={(this.props.endName) ? this.props.endName : ''} />
+                    <Input placeholder="도착지"
+                        onChangeText={(text) =>
+                        this.setState({endName:text})
+                        }
+                        value={this.state.endName}  />
                 </Item>
             </Form>
             <Card>
