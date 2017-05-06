@@ -21,7 +21,7 @@ export default class Main extends Component {
             <Content padder>
                 <View>
                     <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
-                            onPress= {() => {Actions.standard(); }}>
+                            onPress= {() => {Actions.standard(/*{"startName":"aaa", "endName":"bbb"}*/); }}>
                          <Text>Goto Page 1</Text>
                      </Button>
                      <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
