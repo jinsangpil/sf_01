@@ -1,32 +1,32 @@
 {
-        "reults" : {
-                [       
+        "reults" : [
+                {
                 "name":"아라우",
                 "tag":["아라우", "arawoo"]
-                ],
-                [
+                },
+                {
                 "name":"헤리지우",
                 "tag":["헤리자우", "herizawoo"]
-                ],
-                [
+                },
+                {
                 "name":"아펜첼",
                 "tag":["아펜첼","apenzel"]
-                ],
-                [
+                },
+                {
                 "name":"리슈틸",
                 "tag":["리슈탈","reshutal"]
-                ],      
-                [
+                },      
+                {
                 "name":"바젤",
                 "tag":["bazel", "바젤"] 
-                ],
-                [
+                },
+                {
                 "name":"베른",
                 "tag":["베른","baeren"]
-                ],
-                [
+                },
+                {
                 "name":"프리부르",
                 "tag":["프리부르", "prebure"]
-                ]    
-        }
+                }    
+        ]
 }
