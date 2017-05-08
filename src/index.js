@@ -14,10 +14,10 @@ import Touch from './touch/touch';
 export default class InitApp extends Component {
   render() {
     return (
-      <Router hideNavBar= "true">
-          <Scene key="root">
+      <Router>
+          <Scene key="root" hideNavBar={false}>
             <Scene key="main" component={Main} title="Main" initial={true} />
-            <Scene key="standard" component={Standard} title="Standard" />
+            <Scene key="standard" component={Standard} title="Standard"/>
             <Scene key="touch" component={Touch} title="Touch" />
           </Scene>
         </Router>
