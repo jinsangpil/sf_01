@@ -3,9 +3,9 @@
  * https://github.com/facebook/react-native
  * @flow
  */
-
+import Autocomplete from 'react-native-autocomplete-input';
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet,View,TouchableOpacity } from 'react-native';
 import {
     Container, Content, Text, Card, Header, Body, Button, Title, CardItem ,
     Form, Item, Input
@@ -21,61 +21,143 @@ const styles = StyleSheet.create({
  });
 
 
+ const API = 'https://raw.githubusercontent.com/jinsangpil/sf_01/master/test.json';
+ const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+
 export default class Standard extends Component {
     constructor(props) {
-    super(props);
-    this.state = {
-        startName: (this.props.startName) ? this.props.startName : '',
-        endName: (this.props.endName) ? this.props.endName : ''
-    };
-  }
+        super(props);
+        this.state = {
+            startName: (this.props.startName) ? this.props.startName : '',  //출발지
+            endName: (this.props.endName) ? this.props.endName : '',         //도착지
 
-  render() {
+            places: [],
+            query: ''
+        };
+    }
+
+    //첫 Component 가 로드 되었을경우 호출 되는 부분으로 보임 ( web의 document.ready() 느낌 ) - render보다 빠른 실행
+    componentDidMount() {
+        fetch(`${API}`).then(res => res.json()).then((json) => {
+            // console.log(json , "json");
+          const { results: places } = json;
+          this.setState({ places });
+        //   console.log(films, "films");
+        });
+    }
+
+    //render() 에서 호출 하고 있는 함수
+    findFilm(query) {
+        // console.log("findFilm - query : "+query);
+        if (query === '') {
+          return [];
+        }
+// console.log(films, "films- findFilm");
+        const place = this.state.places;       //const films = this.state.films;   와 동일
+ // console.log(this.state, "films- this.state");
+ // console.log(place, "films- findFilm2");
+        const regex = new RegExp(`${query.trim()}`, 'i');
+//console.log(films.filter(film => film.title.search(regex) >= 0), "search"); //정규식 title 검색하는거
+
+        var placeResult = [];
+        for( var i in place ){
+            // console.log( place[i], "place "+i);
+            // console.log( place[i]['tag'], "place[tag] ");
+            //한국 어플이기 때문에, 부르는 이름이 다를수 있어서 여러가지 이름을 배열에 넣고 모두 검색 할 예정
+            for( var k in place[i]['tag'] ){
+                if( place[i]['tag'][k].search(regex) > 0 ) {
+                    placeResult.push(place[i]);
+                    continue;
+                }
+            }
+        }
+        // console.log(placeResult, "placeResult");
+    console.log("--findFilm() end ---------------------------------");
+        return placeResult;
+
+//        return films.filter(film => film.title.search(regex) >= 0); //정규식 title 검색하는거 - return 검색에 포함되는거 array
+    }
+
+    //액션이 일어날때마다 호출되는곳 으로 보임.
+    render() {
       console.log(this.props, "this.props");
       console.log(this.props.name, "name");
     /*
         Card = 네모박스
     */
-    return (
-        <Container>
-            <Header>
-                <Body>
-                    <Title>Standard</Title>
-                </Body>
-            </Header>
-            <Content padder>
 
-            <Form>
-                <Item>
-                    <Input placeholder="출발지"
-                        onChangeText={(text) =>
-                        this.setState({startName:text})
-                        }
-                        value={this.state.startName} />
-                </Item>
-                <Item>
-                    <Input placeholder="도착지"
-                        onChangeText={(text) =>
-                        this.setState({endName:text})
-                        }
-                        value={this.state.endName}  />
-                </Item>
-            </Form>
-            <Card>
-                <CardItem>
-                  <Body>
-                    <Text>
-                        스위스 지하철 어플리케이션!!!!!!!!!!!!
-                    </Text>
-                  </Body>
-                </CardItem>
-            </Card>
-            <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
-                    onPress= {() => {Actions.pop(); }}>
-                 <Text>Goto Page 1</Text>
-             </Button>
-             </Content>
-        </Container>
-    );
-  }
+
+        const { query } = this.state;
+        const places = this.findFilm(query);
+        /*
+            function comp (a, b){
+                return a.toLowerCase().trim() === b.toLowerCase().trim();
+            }
+        */
+        //const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
+        const comp = (a, b) => a.trim() === b.trim();
+console.log(places, "자동완성-place");
+        return (
+            <Container>
+                <Header>
+                    <Body>
+                        <Title>Standard</Title>
+                    </Body>
+                </Header>
+                <Content padder>
+
+                <Form>
+                    <Item>
+                        <Input placeholder="출발지"
+                            onChangeText={(text) =>
+                                this.setState({startName:text})
+                            }
+                            value={this.state.startName} />
+                    </Item>
+                    <Item>
+                        <Input placeholder="도착지"
+                            onChangeText={(text) =>
+                            this.setState({endName:text})
+                            }
+                            value={this.state.endName}  />
+                    </Item>
+                    <Item>
+
+                      <View style={styles.container}>
+                        <Autocomplete
+                          autoCapitalize="none"
+                          autoCorrect={false}
+                          containerStyle={{width:150}}
+                          data={places.length === 1 ? [] : places}
+                          defaultValue={query}
+                          onChangeText={text => this.setState({ query: text })}
+                          placeholder="Enter Place"
+                          renderItem={({ name }) => (
+                            <TouchableOpacity style={{backgroundColor:"green"}} onPress={() => {this.setState({ query: name }); console.log(name, "render-name");}}>
+                              <Text style={{backgroundColor:"red"}}>
+                                {name}
+                              </Text>
+                            </TouchableOpacity>
+                        )}
+                        />
+                      </View>
+                    </Item>
+                </Form>
+                <Card>
+                    <CardItem>
+                      <Body>
+                        <Text>
+                            스위스 지하철 어플리케이션!!!!!!!!!!!!
+                        </Text>
+                      </Body>
+                    </CardItem>
+                </Card>
+                <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
+                        onPress= {() => {Actions.pop(); }}>
+                     <Text>Goto Page 1</Text>
+                 </Button>
+                 </Content>
+            </Container>
+        );
+    }
 }
