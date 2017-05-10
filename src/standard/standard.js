@@ -64,10 +64,14 @@ export default class Standard extends Component {
             // console.log( place[i], "place "+i);
             // console.log( place[i]['tag'], "place[tag] ");
             //한국 어플이기 때문에, 부르는 이름이 다를수 있어서 여러가지 이름을 배열에 넣고 모두 검색 할 예정
+console.log(place[i]['name'], 'name');
             for( var k in place[i]['tag'] ){
-                if( place[i]['tag'][k].search(regex) > 0 ) {
+console.log('       tag name : '+place[i]['tag'][k]);
+console.log(place[i]['tag'][k].search(regex), "regex");
+                if( place[i]['tag'][k].search(regex) >= 0 ) {
+console.log('-ok-----');
                     placeResult.push(place[i]);
-                    continue;
+                    break;
                 }
             }
         }
@@ -108,39 +112,40 @@ console.log(places, "자동완성-place");
 
                 <Form>
                     <Item>
-                        <Input placeholder="출발지"
-                            onChangeText={(text) =>
-                                this.setState({startName:text})
-                            }
-                            value={this.state.startName} />
+                        <View style={{flex:1}}>
+                            <Autocomplete
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                containerStyle={{/*width:300*/}}
+                                data={places.length === 1 ? [] : places}
+                                defaultValue={query}
+                                onChangeText={text => this.setState({ query: text, startName:text })}
+                                placeholder="출발지"
+                                value={this.state.startName}
+                                renderItem={({ name }) => (
+                                <TouchableOpacity onPress={() => this.setState({ query: name, startName: name }) }>
+                                    <Text>start - {name}</Text>
+                                </TouchableOpacity>
+                            )} />
+                        </View>
                     </Item>
                     <Item>
-                        <Input placeholder="도착지"
-                            onChangeText={(text) =>
-                            this.setState({endName:text})
-                            }
-                            value={this.state.endName}  />
-                    </Item>
-                    <Item>
-
-                      <View style={styles.container}>
-                        <Autocomplete
-                          autoCapitalize="none"
-                          autoCorrect={false}
-                          containerStyle={{width:150}}
-                          data={places.length === 1 ? [] : places}
-                          defaultValue={query}
-                          onChangeText={text => this.setState({ query: text })}
-                          placeholder="Enter Place"
-                          renderItem={({ name }) => (
-                            <TouchableOpacity style={{backgroundColor:"green"}} onPress={() => {this.setState({ query: name }); console.log(name, "render-name");}}>
-                              <Text style={{backgroundColor:"red"}}>
-                                {name}
-                              </Text>
-                            </TouchableOpacity>
-                        )}
-                        />
-                      </View>
+                        <View style={{flex:1}}>
+                            <Autocomplete
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                containerStyle={{/*width:300*/}}
+                                data={places.length === 1 ? [] : places}
+                                defaultValue={query}
+                                onChangeText={text => this.setState({ query: text, endName:text })}
+                                placeholder="도착지"
+                                value={this.state.endName}
+                                renderItem={({ name }) => (
+                                <TouchableOpacity onPress={() => this.setState({ query: name, endName: name }) }>
+                                    <Text>end - {name}</Text>
+                                </TouchableOpacity>
+                            )} />
+                        </View>
                     </Item>
                 </Form>
                 <Card>
@@ -153,8 +158,11 @@ console.log(places, "자동완성-place");
                     </CardItem>
                 </Card>
                 <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
-                        onPress= {() => {Actions.pop(); }}>
-                     <Text>Goto Page 1</Text>
+                        onPress= {() => {
+                            console.log("---api fetch----");
+
+                        }}>
+                     <Text>경로 확인</Text>
                  </Button>
                  </Content>
             </Container>
