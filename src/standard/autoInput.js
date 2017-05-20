@@ -109,7 +109,7 @@ console.log(places, "자동완성-place");
                 data={places.length === 1 ? [] : places}
                 defaultValue={query}
                 onChangeText={text => {this.setState({ query: text, name: text }); this.props.onChangeInput(this.props.type, text);}}
-                placeholder={this.props.type}
+                placeholder={this.props.type=='start'?"출발지":(this.props.type=='end'?'도착지':(this.props.type='pass'?'경유지':this.props.type))}
                 value={this.state.name}
                 renderItem={({ name }) => (
                 <TouchableOpacity onPress={() => {this.setState({ query: name, name: name }); this.props.onChangeInput(this.props.type, name);} }>

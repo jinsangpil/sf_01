@@ -35,6 +35,7 @@ export default class Standard extends Component {
 
         this.state = {
             startName : '',
+            passName : '',
             endName : '',
             date : year+"-"+(month<10?"0":"")+month+"-"+day+" "+hour+":"+minute,     //today date
             minDate : year+"-"+(month<10?"0":"")+month+"-"+day,     //today date
@@ -45,7 +46,9 @@ export default class Standard extends Component {
     changeInput = (type, value) => {
         if(type == 'start') {
             this.setState({startName:value});
-        } else {
+        } else if (type == 'pass') {
+            this.setState({passName:value});
+        }else {
             this.setState({endName:value});
         }
         console.log('value :' + value);
@@ -82,6 +85,11 @@ export default class Standard extends Component {
                     </Item>
                     <Item>
                         <View style={{flex:1}}>
+                            <AutoInput type="pass" name={this.state.passName} onChangeInput={this.changeInput}/>
+                        </View>
+                    </Item>
+                    <Item>
+                        <View style={{flex:1}}>
                             <AutoInput type='end' name={this.state.endName} onChangeInput={this.changeInput}/>
                         </View>
                     </Item>
@@ -90,12 +98,12 @@ export default class Standard extends Component {
                             style={{width: 200}}
                             date={this.state.date}
                             mode="datetime"     //date , datetime, time
-                            placeholder="select date"
+                            placeholder="날짜 선택"     //default값이 있어 없어도 됨.
                             format="YYYY-MM-DD HH:mm"
                             minDate={this.state.minDate}
                             maxDate={this.state.maxDate}
-                            confirmBtnText="Confirm"
-                            cancelBtnText="Cancel"
+                            confirmBtnText="확인"
+                            cancelBtnText="취소"
                             customStyles={{
                               dateIcon: {
                                 position: 'absolute',
@@ -106,7 +114,7 @@ export default class Standard extends Component {
                               dateInput: {
                                 marginLeft: 36
                               }
-                              // ... You can check the source to find the other keys.
+
                             }}
                             onDateChange={(date) => {this.setState({date: date})}}
                           />
