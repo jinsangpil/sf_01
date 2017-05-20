@@ -34,12 +34,13 @@ export default class Standard extends Component {
         var minute = date.getMinutes();
 
         this.state = {
-            startName : '',
-            passName : '',
-            endName : '',
+            startName : (this.props.startName) ? this.props.startName : '',
+            passName : (this.props.passName) ? this.props.passName : '',
+            endName : (this.props.endName) ? this.props.endName : '',
             date : year+"-"+(month<10?"0":"")+month+"-"+day+" "+hour+":"+minute,     //today date
             minDate : year+"-"+(month<10?"0":"")+month+"-"+day,     //today date
             maxDate : (year+1)+"-"+(month<10?"0":"")+month+"-"+day,     //Next Year
+            showPass : (this.props.showPass) ? this.props.showPass : false,
         }
     }
 
@@ -83,7 +84,7 @@ export default class Standard extends Component {
                             <AutoInput type="start" name={this.state.startName} onChangeInput={this.changeInput}/>
                         </View>
                     </Item>
-                    <Item>
+                    <Item style={this.state.showPass ? {} : { display: 'none' }}>
                         <View style={{flex:1}}>
                             <AutoInput type="pass" name={this.state.passName} onChangeInput={this.changeInput}/>
                         </View>
@@ -118,6 +119,21 @@ export default class Standard extends Component {
                             }}
                             onDateChange={(date) => {this.setState({date: date})}}
                           />
+
+                        <Button bordered danger onPress= {() => {
+                            /* TODO ????????????????????????????????????????? */
+                            console.log("바꾸기!");
+                            console.log(this.state.startName, "this.startName");
+                                var startName = this.state.startName;
+                                console.log(startName, "startName");
+                                this.state.startName = this.state.endName;
+                                console.log("start결과  :"+this.state.startName);
+                                this.state.endName = startName;
+                                console.log("end결과 : "+this.state.endName);
+                            }
+                        }>
+                             <Text>바꾸기</Text>
+                         </Button>
                     </Item>
                 </Form>
                 <Card>
