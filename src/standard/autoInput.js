@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
  });
 
 
- const API = 'https://raw.githubusercontent.com/jinsangpil/sf_01/master/test.json';
+const API = 'https://raw.githubusercontent.com/jinsangpil/sf_01/master/test.json';
 
 export default class AutoInput extends Component {
     static propTypes = {
@@ -47,15 +47,15 @@ export default class AutoInput extends Component {
     }
 
     //render() 에서 호출 하고 있는 함수
-    findFilm(query) {
-        // console.log("findFilm - query : "+query);
+    findPlace(query) {
+        // console.log("findPlace - query : "+query);
         if (query === '') {
           return [];
         }
-// console.log(films, "films- findFilm");
+// console.log(films, "films- findPlace");
         const place = this.state.places;       //const films = this.state.films;   와 동일
  // console.log(this.state, "films- this.state");
- // console.log(place, "films- findFilm2");
+ // console.log(place, "films- rfsfindPlace2");
         const regex = new RegExp(`${query.trim()}`, 'i');
 //console.log(films.filter(film => film.title.search(regex) >= 0), "search"); //정규식 title 검색하는거
 
@@ -76,7 +76,7 @@ console.log('-ok-----');
             }
         }
         // console.log(placeResult, "placeResult");
-    console.log("--findFilm() end ---------------------------------");
+
         return placeResult;
 
 //        return films.filter(film => film.title.search(regex) >= 0); //정규식 title 검색하는거 - return 검색에 포함되는거 array
@@ -92,7 +92,7 @@ console.log('-ok-----');
 
 
         const { query } = this.state;
-        const places = this.findFilm(query);
+        const places = this.findPlace(query);
         /*
             function comp (a, b){
                 return a.toLowerCase().trim() === b.toLowerCase().trim();
