@@ -1,0 +1,40 @@
+{
+        "results" : {
+        
+                "arawoo":{
+                  "name":"아라우",
+                  "tag":["아라우", "arawoo"],
+                  "key":"arawoo"
+                },
+                "herizawoo":{
+                  "name":"헤리지우",
+                  "tag":["헤리자우", "herizawoo"],
+                  "key":"herizawoo"
+                },
+                "apenzel":{
+                  "name":"아펜첼",
+                  "tag":["아펜첼","apenzel"],
+                  "key":"apenzel"
+                },
+                "reshutal":{
+                  "name":"리슈틸",
+                  "tag":["리슈탈","reshutal"],
+                  "key":"reshutal"
+                },      
+                "bazel":{
+                  "name":"바젤",
+                  "tag":["bazel", "바젤"],
+                  "key":"bazel"
+                },
+                "baeren":{
+                  "name":"베른",
+                  "tag":["베른","baeren"],
+                  "key":"baeren"
+                },
+                "prebure":{
+                  "name":"프리부르",
+                  "tag":["프리부르", "prebure"],
+                  "key":"prebure"
+                }    
+        }
+}
