@@ -5,7 +5,7 @@
  */
 import Autocomplete from 'react-native-autocomplete-input';
 import React, { Component } from 'react';
-import { StyleSheet,View,TouchableOpacity } from 'react-native';
+import { StyleSheet,View,TouchableOpacity,AsyncStorage } from 'react-native';
 import {
     Container, Content, Text, Card, Header, Body, Button, Title, CardItem ,
     Form, Item, Input
@@ -42,6 +42,22 @@ export default class Standard extends Component {
             maxDate : (year+1)+"-"+(month<10?"0":"")+month+"-"+day,     //Next Year
             showPass : (this.props.showPass) ? this.props.showPass : false,
         }
+/*
+        testSetData = {
+            'a':'b'
+        }
+
+        AsyncStorage.setItem('test_key', JSON.stringify(testSetData), () => {
+
+        });
+
+*/
+/*
+        AsyncStorage.getItem('test_key', (err, result) => {
+            console.log(err, "err");
+            console.log(result, "result");
+        });
+*/
     }
 
     changeInput = (type, value) => {
@@ -53,6 +69,35 @@ export default class Standard extends Component {
             this.setState({endName:value});
         }
         console.log('value :' + value);
+    }
+
+    //API호출 ( 경로확인 )
+    findPath = () => {
+        //console.log(this.state.startName);
+        console.log("api호출");
+        /*
+        JSON =
+        {
+        "results" : [
+                {
+                "name":"아라우",
+                "tag":["아라우", "arawoo"]
+                },
+                {
+                "name":"헤리지우",
+                "tag":["헤리자우", "herizawoo"]
+                }
+        ]
+}
+        */
+console.log(this.state.startName, "start");
+        console.log(typeof this.state.startName, "typeof start");
+        //foreach( )
+        //if( typeof this.state.startName != "undefind" )
+        //AsyncStorage.setItem('recentInput', JSON.stringify(testSetData), () => {
+
+        //});
+
     }
 
 
@@ -123,13 +168,16 @@ export default class Standard extends Component {
                         <Button bordered danger onPress= {() => {
                             /* TODO ????????????????????????????????????????? */
                             console.log("바꾸기!");
-                            console.log(this.state.startName, "this.startName");
-                                var startName = this.state.startName;
-                                console.log(startName, "startName");
-                                this.state.startName = this.state.endName;
-                                console.log("start결과  :"+this.state.startName);
-                                this.state.endName = startName;
-                                console.log("end결과 : "+this.state.endName);
+
+                                var _endName = this.state.startName;
+                                this.setState({startName:this.state.endName, endName:_endName});
+                                console.log(this.state.startName, "startName");
+                                console.log(this.state.endName, "endName");
+                                //
+                                // this.state.startName = this.state.endName;
+                                // console.log("start결과  :"+this.state.startName);
+                                // this.state.endName = startName;
+                                // console.log("end결과 : "+this.state.endName);
                             }
                         }>
                              <Text>바꾸기</Text>
@@ -147,8 +195,8 @@ export default class Standard extends Component {
                 </Card>
                 <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
                         onPress= {() => {
-                            console.log("---api fetch----");
-                            console.log(this.state.startName);
+                            this.findPath();
+
 
                         }}>
                      <Text>경로 확인</Text>
