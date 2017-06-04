@@ -166,18 +166,11 @@ console.log(this.state.startName, "start");
                           />
 
                         <Button bordered danger onPress= {() => {
-                            /* TODO ????????????????????????????????????????? */
-                            console.log("바꾸기!");
+                                console.log("바꾸기!");
 
                                 var _endName = this.state.startName;
                                 this.setState({startName:this.state.endName, endName:_endName});
-                                console.log(this.state.startName, "startName");
-                                console.log(this.state.endName, "endName");
-                                //
-                                // this.state.startName = this.state.endName;
-                                // console.log("start결과  :"+this.state.startName);
-                                // this.state.endName = startName;
-                                // console.log("end결과 : "+this.state.endName);
+
                             }
                         }>
                              <Text>바꾸기</Text>

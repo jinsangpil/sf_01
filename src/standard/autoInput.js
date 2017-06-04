@@ -37,7 +37,7 @@ export default class AutoInput extends Component {
     }
 
     //Component의 props가 변경되면 호출되는 함수
-    componentWillReceiveProps(nextProps){);
+    componentWillReceiveProps(nextProps){
         //출발지나 도착지가 변경되면, this.state.name 을 변경
         if( nextProps.type == "end" || nextProps.type == "start" ) {
             this.state.name = nextProps.name;
