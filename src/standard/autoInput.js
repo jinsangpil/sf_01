@@ -36,17 +36,18 @@ export default class AutoInput extends Component {
         };
 
         //keys값이 있을 경우 데이터에서 name값을 가져옴
-        if( this.state.keys ){
-            fetch(`${API}`).then(res => res.json()).then((json) => {
-                 console.log(json.results , "json.results");
-             // const { results: places } = json;
-              this.setState({ places : json.results});
 
-              if( this.state.places[this.props.keys] ) {
-                  this.setState({name:this.state.places[this.props.keys].name});
-              }
-            });
-        }
+        fetch(`${API}`).then(res => res.json()).then((json) => {
+             console.log(json.results , "json.results");
+         // const { results: places } = json;
+          this.setState({ places : json.results});
+
+
+          if( this.state.keys && this.state.places[this.props.keys] ) {
+              this.setState({name:this.state.places[this.props.keys].name});
+          }
+        });
+
         console.log(this.state.places, "start - places");
     }
 
@@ -117,6 +118,8 @@ export default class AutoInput extends Component {
 
         const { query } = this.state;
         const places = this.findPlace(query);
+console.log(query, "query");
+        console.log(this.state.places, "render-places");
         /*
             function comp (a, b){
                 return a.toLowerCase().trim() === b.toLowerCase().trim();
@@ -134,7 +137,7 @@ export default class AutoInput extends Component {
                 defaultValue={query}
                 onChangeText={text => {
                         this.setState({ query: text, name: text });
-                        this.props.onChangeInput(this.props.type, text);
+                        this.props.onChangeInput(this.props.type, text, this.state.places);
                     }
                 }
                 placeholder={this.props.type=='start'?"출발지":(this.props.type=='end'?'도착지':(this.props.type='pass'?'경유지':this.props.type))}
@@ -144,7 +147,7 @@ export default class AutoInput extends Component {
                     console.log("Touchable : "+name);
                         this.setState({ query: name, name: name });
                         console.log("----1----");
-                        this.props.onChangeInput(this.props.type, name);
+                        this.props.onChangeInput(this.props.type, name, this.state.places);
                         console.log("----2----");
                     }
                 }>

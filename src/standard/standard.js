@@ -55,10 +55,12 @@ export default class Standard extends Component {
 //             // console.log(json , "json");
 // console.log("================3================");
 // console.log(json, "json");
-//           const { results: places } = json;
-//           this.setState({ places });
+//         //   const { results: places } = json;
+//         console.log(json.results, "json.results");
+//           this.setState({ places:json.results });
 // console.log("================4================");
 //         //   console.log(films, "films");
+//         console.log(this.state.places, "construct - this.state.places");
 //         });
 /*
         testSetData = {
@@ -79,13 +81,14 @@ export default class Standard extends Component {
     }
 
     //[바꾸기] 버튼 클릭
-    changeInput = (type, value) => {
+    changeInput = (type, value, places) => {
         console.log("function changeInput()");
         console.log("type : "+type+" , value : "+value);
         //parentKey 구하기
         var parentKey = "";
-        for( var key in this.state.places ){
-            if( this.state.places[key].name == value ) {
+        console.log(places, "this.state.place - changeInput");
+        for( var key in places ){
+            if( places[key].name == value ) {
                 parentKey = key;
                 break;
             }
