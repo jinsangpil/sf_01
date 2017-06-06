@@ -26,6 +26,9 @@ export default class Standard extends Component {
     constructor(props) {
         super(props);
 
+        //config
+        var Environment = require('../../environment.js');
+
         var date = new Date();
         var year = date.getFullYear();
         var month = date.getMonth()+1;
@@ -34,14 +37,29 @@ export default class Standard extends Component {
         var minute = date.getMinutes();
 
         this.state = {
-            startName : (this.props.startName) ? this.props.startName : '',
-            passName : (this.props.passName) ? this.props.passName : '',
-            endName : (this.props.endName) ? this.props.endName : '',
+            startKey : (this.props.startKey) ? this.props.startKey : '',
+            passKey : (this.props.passKey) ? this.props.passKey : '',
+            endKey : (this.props.endKey) ? this.props.endKey : '',
             date : year+"-"+(month<10?"0":"")+month+"-"+day+" "+hour+":"+minute,     //today date
             minDate : year+"-"+(month<10?"0":"")+month+"-"+day,     //today date
             maxDate : (year+1)+"-"+(month<10?"0":"")+month+"-"+day,     //Next Year
             showPass : (this.props.showPass) ? this.props.showPass : false,
+            places : {}
         }
+        console.log(this.state, "===this.state===");
+// console.log("================1================");
+//         const API = Environment.SBB_DATA_JSON;
+// console.log("================2================");
+//
+//         fetch(`${API}`).then(res => res.json()).then((json) => {
+//             // console.log(json , "json");
+// console.log("================3================");
+// console.log(json, "json");
+//           const { results: places } = json;
+//           this.setState({ places });
+// console.log("================4================");
+//         //   console.log(films, "films");
+//         });
 /*
         testSetData = {
             'a':'b'
@@ -60,40 +78,40 @@ export default class Standard extends Component {
 */
     }
 
+    //[바꾸기] 버튼 클릭
     changeInput = (type, value) => {
-        if(type == 'start') {
-            this.setState({startName:value});
-        } else if (type == 'pass') {
-            this.setState({passName:value});
-        }else {
-            this.setState({endName:value});
+        console.log("function changeInput()");
+        console.log("type : "+type+" , value : "+value);
+        //parentKey 구하기
+        var parentKey = "";
+        for( var key in this.state.places ){
+            if( this.state.places[key].name == value ) {
+                parentKey = key;
+                break;
+            }
         }
-        console.log('value :' + value);
+
+        if( parentKey != "" ) {
+            if(type == 'start') {
+                this.setState({startKey:parentKey});
+            } else if (type == 'pass') {
+                this.setState({passKey:parentKey});
+            } else {
+                this.setState({endKey:parentKey});
+            }
+        }
+        // console.log(parentKey, "parentKet");
+        // console.log('value :' + value);
     }
 
     //API호출 ( 경로확인 )
     findPath = () => {
-        //console.log(this.state.startName);
+        //console.log(this.state.startKey);
         console.log("api호출");
-        /*
-        JSON =
-        {
-        "results" : [
-                {
-                "name":"아라우",
-                "tag":["아라우", "arawoo"]
-                },
-                {
-                "name":"헤리지우",
-                "tag":["헤리자우", "herizawoo"]
-                }
-        ]
-}
-        */
-console.log(this.state.startName, "start");
-        console.log(typeof this.state.startName, "typeof start");
+console.log(this.state.startKey, "start");
+        console.log(typeof this.state.startKey, "typeof start");
         //foreach( )
-        //if( typeof this.state.startName != "undefind" )
+        //if( typeof this.state.startKey != "undefind" )
         //AsyncStorage.setItem('recentInput', JSON.stringify(testSetData), () => {
 
         //});
@@ -126,17 +144,17 @@ console.log(this.state.startName, "start");
                 <Form>
                     <Item>
                         <View style={{flex:1}}>
-                            <AutoInput type="start" name={this.state.startName} onChangeInput={this.changeInput}/>
+                            <AutoInput type="start" keys={this.state.startKey} onChangeInput={this.changeInput}/>
                         </View>
                     </Item>
                     <Item style={this.state.showPass ? {} : { display: 'none' }}>
                         <View style={{flex:1}}>
-                            <AutoInput type="pass" name={this.state.passName} onChangeInput={this.changeInput}/>
+                            <AutoInput type="pass" keys={this.state.passKey} onChangeInput={this.changeInput}/>
                         </View>
                     </Item>
                     <Item>
                         <View style={{flex:1}}>
-                            <AutoInput type='end' name={this.state.endName} onChangeInput={this.changeInput}/>
+                            <AutoInput type='end' keys={this.state.endKey} onChangeInput={this.changeInput}/>
                         </View>
                     </Item>
                     <Item>
@@ -168,8 +186,8 @@ console.log(this.state.startName, "start");
                         <Button bordered danger onPress= {() => {
                                 console.log("바꾸기!");
 
-                                var _endName = this.state.startName;
-                                this.setState({startName:this.state.endName, endName:_endName});
+                                var _endKey = this.state.startKey;
+                                this.setState({startKey:this.state.endKey, endKey:_endKey});
 
                             }
                         }>
@@ -189,8 +207,6 @@ console.log(this.state.startName, "start");
                 <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
                         onPress= {() => {
                             this.findPath();
-
-
                         }}>
                      <Text>경로 확인</Text>
                  </Button>
