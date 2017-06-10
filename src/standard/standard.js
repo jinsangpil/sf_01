@@ -107,17 +107,124 @@ export default class Standard extends Component {
         // console.log('value :' + value);
     }
 
+    array_push = (x, y) => {
+        var obj = {};
+        for (var i = x.length-1; i >= 0; -- i)
+            obj[x[i]] = x[i];
+        for (var i = y.length-1; i >= 0; -- i)
+            obj[y[i]] = y[i];
+        var res = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) res.push(obj[k]);
+        }
+        return res;
+
+        for( var i in y ){
+            x.push(y[i])
+        }
+    }
+
+
+
     //API호출 ( 경로확인 )
     findPath = () => {
         //console.log(this.state.startKey);
         console.log("api호출");
 console.log(this.state.startKey, "start");
         console.log(typeof this.state.startKey, "typeof start");
-        //foreach( )
-        //if( typeof this.state.startKey != "undefind" )
-        //AsyncStorage.setItem('recentInput', JSON.stringify(testSetData), () => {
 
-        //});
+
+        var params = new Array();
+        if( !this.state.startKey || !this.state.endKey ){
+            alert('목적지 설정이 안되있음');
+        }
+        params['from'] = this.state.startKey;
+        params['to'] = this.state.endKey;
+
+        var queryString = "";
+        for( var key in params ){
+            queryString += "&"+key+"="+params[key];
+        }
+
+        console.log(queryString, "queryString");
+//TODO
+queryString = "from=Lausanne&to=Genève";
+        var url = "http://transport.opendata.ch/v1/connections?"+queryString;
+
+
+        //API 호출(Swiss transport)
+        fetch(`${url}`).then(res => res.json()).then((json) => {
+            console.log("----------swiss Transport API-------");
+
+console.log(json, "json");
+        //   const { results: places } = json;
+
+console.log("================apiEnd================");
+
+
+            //최근검색지 검색 후 Set
+            AsyncStorage.getItem('test_key', (err, recentKey) => {
+                //string으로 되어있는 저장된 값을 parsing하여 Array로 변화
+                recentKey = JSON.parse(recentKey);
+console.log(recentKey, "기존 들어가있는 최근검색지");
+
+                //현재 검색한 값을 배열에 담음
+                var searchKey = [this.state.startKey, this.state.endKey];
+                if( this.state.passKey ) {
+                    searchKey.push(this.state.passKey);
+                }
+console.log(searchKey, "검색지역");
+
+                //검색한 키값을, 원래 있던 최근검색지에서 뺌 (맨 뒤에다가 다시 붙이기 위함)
+                var tmpRecentKey = new Array();
+console.log("------------start----------");
+                for( var key in recentKey ) {
+console.log("-s : "+recentKey[key]+"------");
+                    //현재 최근검색지에 있는 항목과 검색한 항목을 비교해서 중복된 값은 뺌
+                    duplicateKey = false;
+
+                    for( var key2 in searchKey ){
+                        if( recentKey[key] == searchKey[key2] ) {
+                            duplicateKey = true;
+                            break;
+                        }
+                    }
+console.log((duplicateKey==true?"true":"false"), "duplicateKey");
+                    //중복된 값일 경우 break;
+                    if( duplicateKey === true ){
+                        continue;
+                    }
+                    //중복된 값이 아니면 배열에 다시 담음
+                    tmpRecentKey.push(recentKey[key]);
+                }
+console.log(tmpRecentKey, "recentKey2-중복제거");
+                //검색한 키값을 merge시킴
+                for( var i in searchKey ){
+                    tmpRecentKey.push(searchKey[i]);
+                }
+                recentKey = tmpRecentKey;
+
+console.log(recentKey, "recentKey3-중복제거후 union");
+
+                var shiftCount = 0;
+                var limitRecentKey = 5;
+                if( recentKey.length > limitRecentKey ){
+                    shiftCount = recentKey.length-limitRecentKey;
+                }
+console.log(shiftCount, "shift갯수");
+                //앞에서부터 갯수 짜르기
+                for( var i=0; i<shiftCount; i++ ){
+                    recentKey.shift();
+                }
+console.log(recentKey, "recentKey4-shift후");
+
+                AsyncStorage.setItem('test_key', JSON.stringify(recentKey), () => {
+
+                });
+
+            });
+        });
+
 
     }
 
