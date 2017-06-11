@@ -36,7 +36,6 @@ export default class AutoInput extends Component {
         };
 
         //keys값이 있을 경우 데이터에서 name값을 가져옴
-
         fetch(`${API}`).then(res => res.json()).then((json) => {
              console.log(json.results , "json.results");
          // const { results: places } = json;

@@ -5,7 +5,7 @@
  */
 import Autocomplete from 'react-native-autocomplete-input';
 import React, { Component } from 'react';
-import { StyleSheet,View,TouchableOpacity,AsyncStorage } from 'react-native';
+import { StyleSheet,View,TouchableOpacity,AsyncStorage,ActivityIndicator } from 'react-native';
 import {
     Container, Content, Text, Card, Header, Body, Button, Title, CardItem ,
     Form, Item, Input
@@ -44,7 +44,9 @@ export default class Standard extends Component {
             minDate : year+"-"+(month<10?"0":"")+month+"-"+day,     //today date
             maxDate : (year+1)+"-"+(month<10?"0":"")+month+"-"+day,     //Next Year
             showPass : (this.props.showPass) ? this.props.showPass : false,
-            places : {}
+            places : {},
+            showProgress : false,       //spinner
+            apiLoadingData : {}
         }
         console.log(this.state, "===this.state===");
 // console.log("================1================");
@@ -124,10 +126,26 @@ export default class Standard extends Component {
         }
     }
 
+    timeConverter = (UNIX_timestamp) => {
+        var a = new Date(UNIX_timestamp * 1000);
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var year = a.getFullYear();
+        var month = ((a.getMonth()+1)<10?"0":"")+(a.getMonth()+1);
+        var date = a.getDate();
+        var hour = (a.getHours()<10?"0":"")+a.getHours();
+        var min = (a.getMinutes()<10?"0":"")+a.getMinutes();
+        // var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min;
+
+        var time = year+"-"+month+"-"+date+" "+hour+":"+min;
+        return time;
+    }
 
 
     //API호출 ( 경로확인 )
     findPath = () => {
+        //spinner시작
+        this.setState({showProgress:true});
+
         //console.log(this.state.startKey);
         console.log("api호출");
 console.log(this.state.startKey, "start");
@@ -140,14 +158,16 @@ console.log(this.state.startKey, "start");
         }
         params['from'] = this.state.startKey;
         params['to'] = this.state.endKey;
+console.log(this.state.date, "this.state.date");
+        params['date'] = this.state.date.split(" ")[0];
+        params['time'] = this.state.date.split(" ")[1];
 
         var queryString = "";
         for( var key in params ){
             queryString += "&"+key+"="+params[key];
         }
-
         console.log(queryString, "queryString");
-//TODO
+//TODO 삭제
 queryString = "from=Lausanne&to=Genève";
         var url = "http://transport.opendata.ch/v1/connections?"+queryString;
 
@@ -160,7 +180,8 @@ console.log(json, "json");
         //   const { results: places } = json;
 
 console.log("================apiEnd================");
-
+            //API로딩 후 데이터
+            this.setState({apiLoadingData:json});
 
             //최근검색지 검색 후 Set
             AsyncStorage.getItem('test_key', (err, recentKey) => {
@@ -221,12 +242,14 @@ console.log(recentKey, "recentKey4-shift후");
                 AsyncStorage.setItem('test_key', JSON.stringify(recentKey), () => {
 
                 });
-
+                //spinner끝
+                this.setState({showProgress:false});
             });
         });
 
 
     }
+
 
 
     //액션이 일어날때마다 호출되는곳 으로 보임.
@@ -242,6 +265,25 @@ console.log(recentKey, "recentKey4-shift후");
         //const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
         const comp = (a, b) => a.trim() === b.trim();
 
+console.log(this.state.apiLoadingData['connections'], "connetction------------");
+    	var payments = [];
+        if( this.state.apiLoadingData['connections'] ) {
+console.log("-----------------for-start---");
+        	for(var i = 0; i < this.state.apiLoadingData['connections'].length; i++){
+                console.log("-------1------- i : "+i);
+                data = this.state.apiLoadingData['connections'][i];
+                console.log(data, "data");
+        		payments.push(
+        			<View key={i}>
+                        <Text>{i+1} : {this.timeConverter(data.from.departureTimestamp)} ▶ {this.timeConverter(data.to.arrivalTimestamp)}</Text>
+        			</View>
+        		)
+        	}
+console.log("-----------------for-end---");
+        }
+
+console.log(payments, "payments-render전에");
+
         return (
             <Container>
                 <Header>
@@ -250,76 +292,76 @@ console.log(recentKey, "recentKey4-shift후");
                     </Body>
                 </Header>
                 <Content padder>
+                    <Form>
+                        <Item>
+                            <View style={{flex:1}}>
+                                <AutoInput type="start" keys={this.state.startKey} onChangeInput={this.changeInput}/>
+                            </View>
+                        </Item>
+                        <Item style={this.state.showPass ? {} : { display: 'none' }}>
+                            <View style={{flex:1}}>
+                                <AutoInput type="pass" keys={this.state.passKey} onChangeInput={this.changeInput}/>
+                            </View>
+                        </Item>
+                        <Item>
+                            <View style={{flex:1}}>
+                                <AutoInput type='end' keys={this.state.endKey} onChangeInput={this.changeInput}/>
+                            </View>
+                        </Item>
+                        <Item>
+                            <DatePicker
+                                style={{width: 200}}
+                                date={this.state.date}
+                                mode="datetime"     //date , datetime, time
+                                placeholder="날짜 선택"     //default값이 있어 없어도 됨.
+                                format="YYYY-MM-DD HH:mm"
+                                minDate={this.state.minDate}
+                                maxDate={this.state.maxDate}
+                                confirmBtnText="확인"
+                                cancelBtnText="취소"
+                                customStyles={{
+                                  dateIcon: {
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 4,
+                                    marginLeft: 0
+                                  },
+                                  dateInput: {
+                                    marginLeft: 36
+                                  }
 
-                <Form>
-                    <Item>
-                        <View style={{flex:1}}>
-                            <AutoInput type="start" keys={this.state.startKey} onChangeInput={this.changeInput}/>
-                        </View>
-                    </Item>
-                    <Item style={this.state.showPass ? {} : { display: 'none' }}>
-                        <View style={{flex:1}}>
-                            <AutoInput type="pass" keys={this.state.passKey} onChangeInput={this.changeInput}/>
-                        </View>
-                    </Item>
-                    <Item>
-                        <View style={{flex:1}}>
-                            <AutoInput type='end' keys={this.state.endKey} onChangeInput={this.changeInput}/>
-                        </View>
-                    </Item>
-                    <Item>
-                        <DatePicker
-                            style={{width: 200}}
-                            date={this.state.date}
-                            mode="datetime"     //date , datetime, time
-                            placeholder="날짜 선택"     //default값이 있어 없어도 됨.
-                            format="YYYY-MM-DD HH:mm"
-                            minDate={this.state.minDate}
-                            maxDate={this.state.maxDate}
-                            confirmBtnText="확인"
-                            cancelBtnText="취소"
-                            customStyles={{
-                              dateIcon: {
-                                position: 'absolute',
-                                left: 0,
-                                top: 4,
-                                marginLeft: 0
-                              },
-                              dateInput: {
-                                marginLeft: 36
-                              }
+                                }}
+                                onDateChange={(date) => {this.setState({date: date})}}
+                              />
 
+                            <Button bordered danger onPress= {() => {
+                                    console.log("바꾸기!");
+
+                                    var _endKey = this.state.startKey;
+                                    this.setState({startKey:this.state.endKey, endKey:_endKey});
+
+                                }
+                            }>
+                                 <Text>바꾸기</Text>
+                             </Button>
+                        </Item>
+                    </Form>
+
+                    <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
+                            onPress= {() => {
+                                this.findPath();
+                            }}>
+                         <Text>경로 확인</Text>
+                     </Button>
+
+
+                        <ActivityIndicator animating={true} size="large"
+                            style={{
+                                opacity: this.state.showProgress ? 1 : 0
                             }}
-                            onDateChange={(date) => {this.setState({date: date})}}
-                          />
+                        />
 
-                        <Button bordered danger onPress= {() => {
-                                console.log("바꾸기!");
-
-                                var _endKey = this.state.startKey;
-                                this.setState({startKey:this.state.endKey, endKey:_endKey});
-
-                            }
-                        }>
-                             <Text>바꾸기</Text>
-                         </Button>
-                    </Item>
-                </Form>
-                <Card>
-                    <CardItem>
-                      <Body>
-                        <Text>
-                            스위스 지하철 어플리케이션!!!!!!!!!!!!
-                        </Text>
-                      </Body>
-                    </CardItem>
-                </Card>
-                <Button dark bordered style = {{alignSelf: 'center', margin: 30}}
-                        onPress= {() => {
-                            this.findPath();
-                        }}>
-                     <Text>경로 확인</Text>
-                 </Button>
+                        {payments}
                  </Content>
             </Container>
         );
