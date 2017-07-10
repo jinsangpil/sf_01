@@ -5,7 +5,7 @@
  */
 import Autocomplete from 'react-native-autocomplete-input';
 import React, { Component, PropTypes } from 'react';
-import { StyleSheet,View,TouchableOpacity, Text } from 'react-native';
+import { StyleSheet,View,TouchableOpacity, Text,AsyncStorage } from 'react-native';
 
 
 
@@ -32,10 +32,12 @@ export default class AutoInput extends Component {
             keys: (this.props.keys) ? this.props.keys : '',  //출발지
             name : '', //(this.props.keys) ? places[this.props.keys].name : '',
             places: {},
-            query: ''
+            query: '',
+            recentPlace : []
         };
 
         //keys값이 있을 경우 데이터에서 name값을 가져옴
+        // console.log("-------------------------------autoInput-constructer---------");
         fetch(`${API}`).then(res => res.json()).then((json) => {
              console.log(json.results , "json.results");
          // const { results: places } = json;
@@ -47,7 +49,12 @@ export default class AutoInput extends Component {
           }
         });
 
-        console.log(this.state.places, "start - places");
+
+        AsyncStorage.getItem('test_key', (err, recentKey) => {
+            //string으로 되어있는 저장된 값을 parsing하여 Array로 변화
+            recentKey = JSON.parse(recentKey);
+            this.setState({recentPlace: recentKey});
+        });
     }
 
     //Component의 props가 변경되면 호출되는 함수
@@ -68,11 +75,46 @@ export default class AutoInput extends Component {
     componentDidMount() {
     }
 
+    isEmptyObj( obj ) {
+        for ( var prop in obj ) {
+            return false;
+        }
+        return true;
+    }
+
     //render() 에서 호출 하고 있는 함수
     findPlace(query) {
+        var placeResult = [];
+
         // console.log("findPlace - query : "+query);
+        // console.log(this.state.places, "places-----------");
+
+        //최근검색지 TODO --------------
+// this.setState(function(prevState, props) {
+//     console.log(prevState, "prevState");
+//     console.log(props, "props");
+// });
+console.log("================start================");
+        //fetch를 통하여 places값이 입력되어서 비교할 대상이 생겼는지 확인
+        if( !this.isEmptyObj(this.state.places) ){
+            var recentPlaces = {};
+            //최근검색지를 for문으로 확인
+            for( var i in this.state.recentPlace ) {
+                //fetch를 통하여 가져온 places내에 최근검색지가 있는지 체크 -> [최근검색지]를 붙이기 위해..
+                if( typeof this.state.places[this.state.recentPlace[i]] !== "undefined") {
+                    //state의 변수를 temp변수에 할당할때는 Object.assign() 사용하기.
+                    recentPlaces = Object.assign({}, this.state.places[this.state.recentPlace[i]]);
+                    recentPlaces['recent'] = true;
+                    placeResult.push(recentPlaces);
+                }
+            }
+        }
+
+console.log(placeResult, "placeResult=================");
+
+        //입력값이 없으면, 최근검색지만
         if (query === '') {
-          return [];
+          return placeResult;
         }
 // console.log(films, "films- findPlace");
         const place = this.state.places;       //const films = this.state.films;   와 동일
@@ -81,7 +123,6 @@ export default class AutoInput extends Component {
         const regex = new RegExp(`${query.trim()}`, 'i');
 //console.log(films.filter(film => film.title.search(regex) >= 0), "search"); //정규식 title 검색하는거
 
-        var placeResult = [];
         //모든 장소로 for돌리기
         for( var i in place ){
             // console.log( place[i], "place "+i);
@@ -99,7 +140,7 @@ export default class AutoInput extends Component {
                 }
             }
         }
-        // console.log(placeResult, "placeResult");
+        console.log(placeResult, "placeResult");
 
         return placeResult;
 
@@ -116,9 +157,9 @@ export default class AutoInput extends Component {
 
 
         const { query } = this.state;
-        const places = this.findPlace(query);
-console.log(query, "query");
-        console.log(this.state.places, "render-places");
+        const places = query != "" ? this.findPlace(query) : [];
+// console.log(query, "query");
+
         /*
             function comp (a, b){
                 return a.toLowerCase().trim() === b.toLowerCase().trim();
@@ -141,18 +182,22 @@ console.log(query, "query");
                 }
                 placeholder={this.props.type=='start'?"출발지":(this.props.type=='end'?'도착지':(this.props.type='pass'?'경유지':this.props.type))}
                 value={this.state.name}
-                renderItem={({ name }) => (
-                <TouchableOpacity onPress={() => {
-                    console.log("Touchable : "+name);
-                        this.setState({ query: name, name: name });
-                        console.log("----1----");
-                        this.props.onChangeInput(this.props.type, name, this.state.places);
-                        console.log("----2----");
+                renderSeparator = { (sectionID, rowID) => {
+                    console.log(rowID, "rowID");
                     }
-                }>
-                    <Text>{this.props.type} - {name}</Text>
-                </TouchableOpacity>
-            )} />
+                }
+
+                renderItem={({ name }) => (
+                    <TouchableOpacity onPress={() => {
+                        console.log("Touchable : "+name);
+                            this.setState({ query: name, name: name });
+                            this.props.onChangeInput(this.props.type, name, this.state.places);
+                        }
+                    }>
+                        <Text>{this.props.type} - {name}   </Text>
+                    </TouchableOpacity>
+                )
+            } />
         </View>
         );
     }

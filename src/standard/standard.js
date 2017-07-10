@@ -4,7 +4,7 @@
  * @flow
  */
 import Autocomplete from 'react-native-autocomplete-input';
-import React, { Component } from 'react';
+import React, { Component,PropTypes } from 'react';
 import { StyleSheet,View,TouchableOpacity,AsyncStorage,ActivityIndicator } from 'react-native';
 import {
     Container, Content, Text, Card, Header, Body, Button, Title, CardItem ,
@@ -23,6 +23,13 @@ const styles = StyleSheet.create({
  });
 
 export default class Standard extends Component {
+    static propTypes = {
+        startKey: PropTypes.string,     //출발지 키
+        passKey: PropTypes.string,      //via(경유지))
+        endKey: PropTypes.string,       //목적지 키
+        showPass: PropTypes.bool        //via보이게 하는지 체크
+    }
+
     constructor(props) {
         super(props);
 
@@ -48,7 +55,7 @@ export default class Standard extends Component {
             showProgress : false,       //spinner
             apiLoadingData : {}
         }
-        console.log(this.state, "===this.state===");
+        // console.log(this.state, "===this.state===");
 // console.log("================1================");
 //         const API = Environment.SBB_DATA_JSON;
 // console.log("================2================");
@@ -84,11 +91,11 @@ export default class Standard extends Component {
 
     //[바꾸기] 버튼 클릭
     changeInput = (type, value, places) => {
-        console.log("function changeInput()");
-        console.log("type : "+type+" , value : "+value);
+        // console.log("function changeInput()");
+        // console.log("type : "+type+" , value : "+value);
         //parentKey 구하기
         var parentKey = "";
-        console.log(places, "this.state.place - changeInput");
+        // console.log(places, "this.state.place - changeInput");
         for( var key in places ){
             if( places[key].name == value ) {
                 parentKey = key;
@@ -158,7 +165,7 @@ console.log(this.state.startKey, "start");
         }
         params['from'] = this.state.startKey;
         params['to'] = this.state.endKey;
-console.log(this.state.date, "this.state.date");
+// console.log(this.state.date, "this.state.date");
         params['date'] = this.state.date.split(" ")[0];
         params['time'] = this.state.date.split(" ")[1];
 
@@ -166,7 +173,7 @@ console.log(this.state.date, "this.state.date");
         for( var key in params ){
             queryString += "&"+key+"="+params[key];
         }
-        console.log(queryString, "queryString");
+        // console.log(queryString, "queryString");
 //TODO 삭제
 queryString = "from=Lausanne&to=Genève";
         var url = "http://transport.opendata.ch/v1/connections?"+queryString;
@@ -176,10 +183,10 @@ queryString = "from=Lausanne&to=Genève";
         fetch(`${url}`).then(res => res.json()).then((json) => {
             console.log("----------swiss Transport API-------");
 
-console.log(json, "json");
+// console.log(json, "json");
         //   const { results: places } = json;
 
-console.log("================apiEnd================");
+// console.log("================apiEnd================");
             //API로딩 후 데이터
             this.setState({apiLoadingData:json});
 
@@ -187,20 +194,20 @@ console.log("================apiEnd================");
             AsyncStorage.getItem('test_key', (err, recentKey) => {
                 //string으로 되어있는 저장된 값을 parsing하여 Array로 변화
                 recentKey = JSON.parse(recentKey);
-console.log(recentKey, "기존 들어가있는 최근검색지");
+// console.log(recentKey, "기존 들어가있는 최근검색지");
 
                 //현재 검색한 값을 배열에 담음
                 var searchKey = [this.state.startKey, this.state.endKey];
                 if( this.state.passKey ) {
                     searchKey.push(this.state.passKey);
                 }
-console.log(searchKey, "검색지역");
+// console.log(searchKey, "검색지역");
 
                 //검색한 키값을, 원래 있던 최근검색지에서 뺌 (맨 뒤에다가 다시 붙이기 위함)
                 var tmpRecentKey = new Array();
-console.log("------------start----------");
+// console.log("------------start----------");
                 for( var key in recentKey ) {
-console.log("-s : "+recentKey[key]+"------");
+// console.log("-s : "+recentKey[key]+"------");
                     //현재 최근검색지에 있는 항목과 검색한 항목을 비교해서 중복된 값은 뺌
                     duplicateKey = false;
 
@@ -210,7 +217,7 @@ console.log("-s : "+recentKey[key]+"------");
                             break;
                         }
                     }
-console.log((duplicateKey==true?"true":"false"), "duplicateKey");
+// console.log((duplicateKey==true?"true":"false"), "duplicateKey");
                     //중복된 값일 경우 break;
                     if( duplicateKey === true ){
                         continue;
@@ -218,26 +225,26 @@ console.log((duplicateKey==true?"true":"false"), "duplicateKey");
                     //중복된 값이 아니면 배열에 다시 담음
                     tmpRecentKey.push(recentKey[key]);
                 }
-console.log(tmpRecentKey, "recentKey2-중복제거");
+// console.log(tmpRecentKey, "recentKey2-중복제거");
                 //검색한 키값을 merge시킴
                 for( var i in searchKey ){
                     tmpRecentKey.push(searchKey[i]);
                 }
                 recentKey = tmpRecentKey;
 
-console.log(recentKey, "recentKey3-중복제거후 union");
+// console.log(recentKey, "recentKey3-중복제거후 union");
 
                 var shiftCount = 0;
                 var limitRecentKey = 5;
                 if( recentKey.length > limitRecentKey ){
                     shiftCount = recentKey.length-limitRecentKey;
                 }
-console.log(shiftCount, "shift갯수");
+// console.log(shiftCount, "shift갯수");
                 //앞에서부터 갯수 짜르기
                 for( var i=0; i<shiftCount; i++ ){
                     recentKey.shift();
                 }
-console.log(recentKey, "recentKey4-shift후");
+// console.log(recentKey, "recentKey4-shift후");
 
                 AsyncStorage.setItem('test_key', JSON.stringify(recentKey), () => {
 
@@ -265,10 +272,10 @@ console.log(recentKey, "recentKey4-shift후");
         //const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
         const comp = (a, b) => a.trim() === b.trim();
 
-console.log(this.state.apiLoadingData['connections'], "connetction------------");
+// console.log(this.state.apiLoadingData['connections'], "connetction------------");
     	var payments = [];
         if( this.state.apiLoadingData['connections'] ) {
-console.log("-----------------for-start---");
+// console.log("-----------------for-start---");
         	for(var i = 0; i < this.state.apiLoadingData['connections'].length; i++){
                 console.log("-------1------- i : "+i);
                 data = this.state.apiLoadingData['connections'][i];
@@ -279,10 +286,10 @@ console.log("-----------------for-start---");
         			</View>
         		)
         	}
-console.log("-----------------for-end---");
+// console.log("-----------------for-end---");
         }
 
-console.log(payments, "payments-render전에");
+// console.log(payments, "payments-render전에");
 
         return (
             <Container>
